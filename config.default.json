@@ -1,6 +1,7 @@
 {
 	"source": {
 		"type": "bamboo",
+		"url": "https://mybambooinstallation.com",
 		"username": "username",
 		"password": "password"
 	}

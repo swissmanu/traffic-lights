@@ -4,8 +4,8 @@ var request = require('request')
 	, buildServer = require('./src/buildServer/' + config.source.type);
 
 buildServer(config.source, request)
-.then(function(latestBuild) {
-	console.log(prettyjson.render(latestBuild));
+.then(function(latestBuildState) {
+	console.log(latestBuildState);
 })
 .catch(function(error) {
 	console.error(error);
