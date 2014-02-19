@@ -19,7 +19,7 @@ function latestBuildOnBamboo(config, request) {
 			}
 		}
 		, function(error, response, body) {
-			if(error === null) {
+			if(!error) {
 				var latestBuild = JSON.parse(body).results.result[0]
 					, state = states.OTHER;
 
