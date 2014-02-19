@@ -1,22 +1,21 @@
 {
-  "name": "bamboo-traffic-lights",
+  "name": "traffic-lights",
   "version": "0.0.1",
-  "description": "Bamboo Build Status as Traffic Light",
+  "description": "Display Build Status on a USB Traffic Light",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/swissmanu/bamboo-traffic-lights"
+    "url": "https://github.com/swissmanu/traffic-lights"
   },
   "author": "Manuel Alabor <manuel@alabor.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/swissmanu/bamboo-traffic-lights/issues"
+    "url": "https://github.com/swissmanu/traffic-lights/issues"
   },
-  "homepage": "https://github.com/swissmanu/bamboo-traffic-lights",
+  "homepage": "https://github.com/swissmanu/traffic-lights",
   "dependencies": {
-    "request": "~2.33.0"
+    "request": "~2.33.0",
+    "prettyjson": "~0.12.0",
+    "q": "~1.0.0"
   }
 }

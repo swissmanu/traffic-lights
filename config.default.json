@@ -1,0 +1,7 @@
+{
+	"source": {
+		"type": "bamboo",
+		"username": "username",
+		"password": "password"
+	}
+}

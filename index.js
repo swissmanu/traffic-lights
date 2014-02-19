@@ -1,3 +1,12 @@
-var request = require('request');
+var request = require('request')
+	, prettyjson = require('prettyjson')
+	, config = require('./config.json')
+	, buildServer = require('./src/buildServer/' + config.source.type);
 
-// wget -qO- --http-user= --http-password= https://project-barcelona.ch/bamboo/rest/api/latest/plan.json?os_authType=basic
+buildServer(config.source, request)
+.then(function(latestBuild) {
+	console.log(prettyjson.render(latestBuild));
+})
+.catch(function(error) {
+	console.error(error);
+});
