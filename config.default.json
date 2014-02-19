@@ -1,4 +1,5 @@
 {
+	"pollInterval": 3600,
 	"source": {
 		"type": "bamboo",
 		"url": "https://mybambooinstallation.com",
