@@ -1,20 +1,18 @@
 var debug = require('debug')('traffic-lights')
 	, request = require('request')
-	, prettyjson = require('prettyjson')
 	, config = require('./config.json')
-	, buildServer = require('./src/buildServer/' + config.source.type)
+	, source = require('./src/source/' + config.source.type)
+	, indicator = require('./src/indicator/' + config.indicator);
 
 function poll() {
-	buildServer(config.source, request)
-	.then(function(latestBuildState) {
-		debug('got build state ' + latestBuildState);
-		console.log(latestBuildState);
-
+	source(config.source, request)
+	.then(indicator)
+	.then(function() {
 		debug('schedule next poll in ' + (config.pollInterval / 1000) + 'seconds');
 		setTimeout(poll, config.pollInterval);
 	})
 	.catch(function(error) {
-		debug('error while fetching build state :(');
+		debug('error :(');
 		console.error(error);
 	});
 }

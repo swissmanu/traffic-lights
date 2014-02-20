@@ -18,7 +18,6 @@
   "homepage": "https://github.com/swissmanu/traffic-lights",
   "dependencies": {
     "request": "~2.33.0",
-    "prettyjson": "~0.12.0",
     "q": "~1.0.0",
     "debug": "~0.7.4"
   }
