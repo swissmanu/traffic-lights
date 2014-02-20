@@ -4,7 +4,7 @@
 var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
 	, q = require('q');
 
-function showWithClewareTrafficLights(buildState) {
+function showWithClewareTrafficLights(config, buildState) {
 	debug('Show build state ' + buildState);
 
 	var defered = q.defer();
