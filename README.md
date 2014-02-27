@@ -1,7 +1,33 @@
 # Traffic Lights
 
-Display Build Status on a USB Traffic Light.
+Display Build Status on a indicators like the [Cleware USB Traffic Light](http://www.cleware.net/neu/produkte/usbtischampel.html).
 
+
+## Requirements
+* node.js 0.10
+* Raspberry Pi with latest Raspbian
+	* Might work on other systems too, but not tested.
+* [Atlassian Bamboo](https://www.atlassian.com/software/bamboo) CI server
+	* Other build servers can be integrated easily. Though, only Bamboo is implemented currently.
+* [Cleware USB Traffic Light](http://www.cleware.net/neu/produkte/usbtischampel.html)
+	* Other build status indicators can be integrated easily. Only the Cleware USB traffic light is implemented at the moment.
+
+## Usage
+### Prepare clewarecontrol
+* Download and build the [Linux version](http://www.vanheusden.com/clewarecontrol/) of `clewarecontrol`
+* Connect your traffic light to the Raspberry Pi
+
+### Prepare `traffic-lights`
+* Clone this repository on the Pi, copy `config.default.json` to `config.json` and adjust the configuration to your needs.
+
+### Monitor Builds
+Start `traffic-lights` with `$ npm start`. If your current user is not allowed to access the USB traffic light device, you may need to start the process with root privileges.
+
+## Run as Daemon
+You may consider [forever](https://github.com/nodejitsu/forever) to run `traffic-lights` as system daemon.
+
+## Debug
+`traffic-lights` makes use of [debug](https://github.com/visionmedia/debug). Start using `DEBUG=* npm start` will print helpful traces to stdout.
 
 
 ## License

@@ -10,7 +10,7 @@
   "author": "Manuel Alabor <manuel@alabor.me>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "sudo node index.js"
   },
   "bugs": {
     "url": "https://github.com/swissmanu/traffic-lights/issues"
