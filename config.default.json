@@ -6,5 +6,8 @@
 		"username": "username",
 		"password": "password"
 	},
-	"indicator": "clewareTrafficLights"
+	"indicator": {
+		"type": "clewareTrafficLights",
+		"clewarecontrolBinary": "/home/pi/clewarecontrol-2.5/clewarecontrol"
+	}
 }

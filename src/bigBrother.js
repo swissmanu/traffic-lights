@@ -5,11 +5,13 @@ var debug = require('debug')('traffic-lights:bigbrother')
  *
  */
 function poll(source,  config, indicator) {
+	debug('polling...');
+
 	var self = this;
 
 	source(config.source, request)
 	.then(function(buildState) {
-		return indicator(config.indicator, buildState);
+		return indicator.update(config.indicator, buildState);
 	})
 	.then(function() {
 		debug('schedule next poll in ' + (config.pollInterval / 1000) + ' seconds');
@@ -37,7 +39,7 @@ var BigBrother = function(config) {
 
 	this.config = config;
 	this.source = require('./source/' + config.source.type)
-	this.indicator = require('./indicator/' + config.indicator);
+	this.indicator = require('./indicator/' + config.indicator.type);
 
 	return this;
 };
@@ -48,7 +50,12 @@ var BigBrother = function(config) {
 BigBrother.prototype.watch = function watch() {
 	if(!this.isWatching()) {
 		debug('Start watching you');
-		poll.call(this, this.source, this.config, this.indicator);
+		var self = this;
+
+		this.indicator.init(this.config.indicator)
+		.then(function() {
+			poll.call(self, self.source, self.config, self.indicator);
+		});
 	} else {
 		debug('I\'m already watching you :-|');
 	}
@@ -62,6 +69,8 @@ BigBrother.prototype.stop = function stop() {
 		debug('Stop watching you');
 		clearTimeout(this.timeoutId);
 		delete this.timeoutId;
+
+		this.indicator.stop(this.config.indicator);
 	} else {
 		debug('I\'m not watching you');
 		result = false;

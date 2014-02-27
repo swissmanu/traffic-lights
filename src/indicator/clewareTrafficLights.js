@@ -1,17 +1,147 @@
-// http://www.cleware.net/neu/produkte/usbtischampel.html
-// https://blog.codecentric.de/en/2013/07/using-a-raspberry-pi-to-control-an-extreme-feedback-devices/
+/** Module: ClewareTrafficLights
+ *
+ * See also:
+ *     * http://www.cleware.net/neu/produkte/usbtischampel.html
+ *     * https://blog.codecentric.de/en/2013/07/using-a-raspberry-pi-to-control-an-extreme-feedback-devices/
+ */
+
 
 var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
-	, q = require('q');
+	, q = require('q')
+	, sys = require('sys')
+	, exec = require('child_process').exec
+	, states = require('../buildState')
+	, lastBuildState;
 
-function showWithClewareTrafficLights(config, buildState) {
-	debug('Show build state ' + buildState);
+/** Function: buildParameterString
+ *
+ */
+function buildParameterString(redOn, yellowOn, greenOn) {
+	var parameterString = ' -c 1 -as 0 ' + (redOn ? '1' : '0');
+	parameterString += ' -as 1 ' + (yellowOn ? '1' : '0');
+	parameterString += ' -as 2 ' + (greenOn ? '1' : '0');
 
-	var defered = q.defer();
+	debug('parameter string: ' + parameterString);
 
-	defered.resolve();
-
-	return defered.promise;
+	return parameterString;
 }
 
-module.exports = showWithClewareTrafficLights;
+/** Function: executeClewarecontrol
+ *
+ */
+function executeClewarecontrol(config, parameters) {
+	debug('execute clewarecontrol using parameters "' + parameters + '"');
+
+	var deferred = q.defer();
+
+	exec(config.clewarecontrolBinary + parameters, function(err) {
+		if(err) {
+			debug('error while executing clewarecontrol: ' + err);
+			deferred.reject(err);
+		} else {
+			debug('clewarecontrol executed successfully');
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+}
+
+/** Function: delay
+ *
+ */
+function delay(ms) {
+	var runner = function() {
+		var deferred = q.defer();
+
+		setTimeout(function() {
+			deferred.resolve();
+		}, ms);
+
+		return deferred.promise;
+	};
+
+	return runner.bind(this);
+}
+
+
+/** Function: init
+ *
+ */
+function init(config) {
+	debug('Init cleware traffic lights');
+
+	return executeClewarecontrol(config, buildParameterString(false, false, false))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, false, false)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(false, true, false)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(false, false, true)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(false, false, false)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, true, true)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(false, false, false)))
+	.then(delay(150))
+	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, true, true)));
+}
+
+/** Function: stop
+ *
+ */
+function stop(config) {
+	debug('Stopping cleware traffic lights');
+	return executeClewarecontrol(config, buildParameterString(false, false, false));
+}
+
+/** Function: update
+ *
+ */
+function update(config, buildState) {
+	debug('Show build state ' + buildState);
+
+	var deferred = q.defer()
+		, parameters;
+
+	if(buildState !== lastBuildState) {
+		debug('Update traffic lights');
+
+		var parameters;
+
+		switch(buildState) {
+			case states.RUNNING :
+				parameters = buildParameterString(false, true, false);
+				break;
+			case states.SUCCESS :
+				parameters = buildParameterString(false, false, true);
+				break;
+			case states.FAILED :
+				parameters = buildParameterString(true, false, false);
+				break;
+			default:
+				parameters = buildParameterString(false, false, false);
+				break;
+		}
+
+		executeClewarecontrol(config, parameters)
+		.then(function() {
+			deferred.resolve();
+		})
+		.catch(function(err) {
+			deferred.reject(err);
+		});
+
+	} else {
+		debug('No need to update traffic lights');
+		deferred.resolve();
+	}
+
+	return deferred.promise;
+}
+
+module.exports = {
+	init: init
+	, update: update
+	, stop: stop
+};
