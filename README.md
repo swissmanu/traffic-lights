@@ -1,4 +1,5 @@
 # Traffic Lights
+[![NPM version](https://badge.fury.io/js/traffic-lights.png)](http://badge.fury.io/js/traffic-lights)
 
 Display Build Status on a indicators like the [Cleware USB Traffic Light](http://www.cleware.net/neu/produkte/usbtischampel.html).
 
