@@ -64,13 +64,10 @@ function delay(ms) {
 	return runner.bind(this);
 }
 
-
-/** Function: init
- *
+/** Function: playRoundAbout
+ * Lights each traffic light on and off in fancy order.
  */
-function init(config) {
-	debug('Init cleware traffic lights');
-
+function playRoundAbout(config) {
 	return executeClewarecontrol(config, buildParameterString(false, false, false))
 	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, false, false)))
 	.then(delay(150))
@@ -85,6 +82,14 @@ function init(config) {
 	.then(executeClewarecontrol.bind(this, config, buildParameterString(false, false, false)))
 	.then(delay(150))
 	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, true, true)));
+}
+
+/** Function: init
+ *
+ */
+function init(config) {
+	debug('Init cleware traffic lights');
+	return playRoundAbout(config);
 }
 
 /** Function: stop
@@ -124,7 +129,8 @@ function update(config, buildState) {
 				break;
 		}
 
-		executeClewarecontrol(config, parameters)
+		playRoundAbout(config)
+		.then(executeClewarecontrol.bind(this, config, parameters))
 		.then(function() {
 			deferred.resolve();
 		})
