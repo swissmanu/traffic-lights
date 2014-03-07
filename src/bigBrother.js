@@ -1,5 +1,6 @@
 var debug = require('debug')('traffic-lights:bigbrother')
-	, request = require('request');
+	, request = require('request')
+	, lastBuildState;
 
 /** Function: poll
  *
@@ -11,7 +12,9 @@ function poll(source,  config, indicator) {
 
 	source(config.source, request)
 	.then(function(buildState) {
-		return indicator.update(config.indicator, buildState);
+		var promise = indicator.update(config.indicator, buildState, lastBuildState);
+		lastBuildState = buildState;
+		return promise;
 	})
 	.then(function() {
 		debug('schedule next poll in ' + (config.pollInterval / 1000) + ' seconds');

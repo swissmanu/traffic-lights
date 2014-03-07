@@ -10,8 +10,7 @@ var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
 	, q = require('q')
 	, sys = require('sys')
 	, exec = require('child_process').exec
-	, states = require('../buildState')
-	, lastBuildState;
+	, states = require('../buildState');
 
 /** Function: buildParameterString
  *
@@ -103,7 +102,7 @@ function stop(config) {
 /** Function: update
  *
  */
-function update(config, buildState) {
+function update(config, buildState, lastBuildState) {
 	debug('Show build state ' + buildState);
 
 	var deferred = q.defer()
