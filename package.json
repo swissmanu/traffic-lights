@@ -1,6 +1,6 @@
 {
   "name": "traffic-lights",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Display Build Status on a USB Traffic Light",
   "main": "index.js",
   "repository": {
