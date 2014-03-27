@@ -3,6 +3,7 @@
 	"source": {
 		"type": "bamboo",
 		"url": "https://mybambooinstallation.com",
+		"planId": "XY-ABC",
 		"username": "username",
 		"password": "password"
 	},

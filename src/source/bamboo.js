@@ -11,7 +11,7 @@ function latestBuildOnBamboo(config, request) {
 	if(url.substr(-1) !== '/') {
 		url += '/';
 	}
-	url += 'rest/api/latest/result/IB-IBP.json?max-result=1&os_authType=basic';
+	url += 'rest/api/latest/result/' + config.planId + '.json?max-result=1&os_authType=basic';
 
 	debug('fetching latest build from url');
 
