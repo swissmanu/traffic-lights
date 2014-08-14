@@ -8,9 +8,8 @@
 
 var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
 	, q = require('q')
-	, sys = require('sys')
 	, exec = require('child_process').exec
-	, states = require('../buildState');
+	, indicatorStates = require('./indicatorState');
 
 /** Function: buildParameterString
  *
@@ -102,25 +101,23 @@ function stop(config) {
 /** Function: update
  *
  */
-function update(config, buildState, lastBuildState) {
-	debug('Show build state ' + buildState);
+function update(config, indicatorState, lastIndicatorState) {
+	debug('Show state ' + indicatorState);
 
 	var deferred = q.defer()
 		, parameters;
 
-	if(buildState !== lastBuildState) {
+	if(indicatorState !== lastIndicatorState) {
 		debug('Update traffic lights');
 
-		var parameters;
-
-		switch(buildState) {
-			case states.RUNNING :
+		switch(indicatorState) {
+			case indicatorStates.WARNING :
 				parameters = buildParameterString(false, true, false);
 				break;
-			case states.SUCCESS :
+			case indicatorStates.OK :
 				parameters = buildParameterString(false, false, true);
 				break;
-			case states.FAILED :
+			case indicatorStates.ERROR :
 				parameters = buildParameterString(true, false, false);
 				break;
 			default:

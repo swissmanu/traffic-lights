@@ -1,6 +1,8 @@
 var debug = require('debug')('traffic-lights:bigbrother')
 	, request = require('request')
-	, lastBuildState;
+	, lastIndicatorState
+	, buildStates = require('./buildState')
+	, indicatorStates = require('./indicator/indicatorState');
 
 /** Function: poll
  *
@@ -12,8 +14,26 @@ function poll(source,  config, indicator) {
 
 	source(config.source, request)
 	.then(function(buildState) {
-		var promise = indicator.update(config.indicator, buildState, lastBuildState);
-		lastBuildState = buildState;
+
+		var indicatorState;
+
+		switch(buildState) {
+			case buildStates.RUNNING :
+				indicatorState = indicatorStates.WARNING;
+				break;
+			case buildStates.SUCCESS :
+				indicatorState = indicatorStates.OK;
+				break;
+			case buildStates.FAILED :
+				indicatorState = indicatorStates.ERROR;
+				break;
+			default:
+				indicatorState = indicatorStates.NONE;
+				break;
+		}
+
+		var promise = indicator.update(config.indicator, indicatorState, lastIndicatorState);
+		lastIndicatorState = indicatorState;
 		return promise;
 	})
 	.then(function() {
@@ -41,7 +61,7 @@ var BigBrother = function(config) {
 	}
 
 	this.config = config;
-	this.source = require('./source/' + config.source.type)
+	this.source = require('./source/' + config.source.type);
 	this.indicator = require('./indicator/' + config.indicator.type);
 
 	return this;
