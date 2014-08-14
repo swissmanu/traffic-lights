@@ -1,3 +1,4 @@
+
 module.exports = {
 	NONE: 0
 	, OK: 1

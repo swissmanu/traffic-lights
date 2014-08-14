@@ -1,8 +1,8 @@
 var debug = require('debug')('traffic-lights:bigbrother')
 	, request = require('request')
-	, lastIndicatorState
-	, buildStates = require('./buildState')
-	, indicatorStates = require('./indicator/indicatorState');
+	, states = require('./indicator/state')
+	, lastState
+	, q = require('q');
 
 /** Function: poll
  *
@@ -10,30 +10,24 @@ var debug = require('debug')('traffic-lights:bigbrother')
 function poll(source,  config, indicator) {
 	debug('polling...');
 
-	var self = this;
+	var self = this
+		, sourcePromises = [];
 
-	source(config.source, request)
-	.then(function(buildState) {
+	self.sources.forEach(function(source, index) {
+		sourcePromises.push(source(config.sources[index], request));
+	});
 
-		var indicatorState;
+	q.all(sourcePromises)
+	.then(function(sourceStates) {
 
-		switch(buildState) {
-			case buildStates.RUNNING :
-				indicatorState = indicatorStates.WARNING;
-				break;
-			case buildStates.SUCCESS :
-				indicatorState = indicatorStates.OK;
-				break;
-			case buildStates.FAILED :
-				indicatorState = indicatorStates.ERROR;
-				break;
-			default:
-				indicatorState = indicatorStates.NONE;
-				break;
-		}
+		var maxState = states.NONE;
 
-		var promise = indicator.update(config.indicator, indicatorState, lastIndicatorState);
-		lastIndicatorState = indicatorState;
+		sourceStates.forEach(function(state) {
+			maxState = Math.max(state, maxState);
+		});
+
+		var promise = indicator.update(config.indicator, maxState, lastState);
+		lastState = maxState;
 		return promise;
 	})
 	.then(function() {
@@ -45,6 +39,8 @@ function poll(source,  config, indicator) {
 		console.error(error);
 	});
 }
+
+
 
 /** Object: BigBrother
  * <BigBrother> watches your configured build server and updates specific
@@ -60,11 +56,18 @@ var BigBrother = function(config) {
 		throw new Error('Big Brother cannot watch you without proper config!');
 	}
 
-	this.config = config;
-	this.source = require('./source/' + config.source.type);
-	this.indicator = require('./indicator/' + config.indicator.type);
+	var self = this;
 
-	return this;
+	self.config = config;
+	self.sources = [];
+	self.indicator = require('./indicator/' + config.indicator.type);
+
+
+	config.sources.forEach(function(source) {
+		self.sources.push(require('./source/' + source.type));
+	});
+
+	return self;
 };
 
 /** Function: watch

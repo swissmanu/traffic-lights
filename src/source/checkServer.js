@@ -1,6 +1,6 @@
 var debug = require('debug')('traffic-lights:source:checkserver')
 	, q = require('q')
-	, buildState = require('../buildState');
+	, state = require('../indicator/state');
 
 function latestBuildOnBamboo(config, request) {
 	var defered = q.defer()
@@ -13,14 +13,14 @@ function latestBuildOnBamboo(config, request) {
 			if(!error) {
 				if(response.statusCode === (config.expectedHttpStatus || 200)) {
 					debug('got expected http status code');
-					defered.resolve(buildState.SUCCESS);
+					defered.resolve(state.OK);
 				} else {
 					debug('got unexpected http status code ' + response.statusCode);
-					defered.resolve(buildState.FAILED);
+					defered.resolve(state.ERROR);
 				}
 			} else {
 				debug('connection error');
-				defered.resolve(buildState.FAILED);
+				defered.resolve(state.ERROR);
 			}
 		}
 	);

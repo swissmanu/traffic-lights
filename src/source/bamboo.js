@@ -1,6 +1,6 @@
 var debug = require('debug')('traffic-lights:source:bamboo')
 	, q = require('q')
-	, buildState = require('../buildState');
+	, states = require('../indicator/state');
 
 function latestBuildOnBamboo(config, request) {
 	debug('fetch build from bamboo');
@@ -28,14 +28,14 @@ function latestBuildOnBamboo(config, request) {
 				debug('got valid response');
 
 				var latestBuild = JSON.parse(body).results.result[0]
-					, state = buildState.OTHER;
+					, state = states.NONE;
 
 				if(latestBuild.state === 'Failed') {
 					debug('build says it failed');
-					state = buildState.FAILED;
+					state = states.ERROR;
 				} else if(latestBuild.state === 'Successful') {
 					debug('build says it was successful');
-					state = buildState.SUCCESS;
+					state = states.OK;
 				}
 
 				defered.resolve(state);

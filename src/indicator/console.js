@@ -4,7 +4,7 @@
 
 var debug = require('debug')('traffic-lights:indicator:console')
 	, q = require('q')
-	, indicatorStates = require('./indicatorState');
+	, states = require('./state');
 
 /** Function: init
  *
@@ -25,20 +25,20 @@ function stop(config) {
 /** Function: update
  *
  */
-function update(config, indicatorState, lastIndicatorState) {
-	debug('Show state ' + indicatorState);
+function update(config, state, lastState) {
+	debug('Show state ' + state);
 
-	if(indicatorState !== lastIndicatorState) {
+	if(state !== lastState) {
 		debug('Update traffic lights');
 
-		switch(indicatorState) {
-			case indicatorStates.WARNING :
+		switch(state) {
+			case states.WARNING :
 				console.log('WARNING');
 				break;
-			case indicatorStates.OK :
+			case states.OK :
 				console.log('OK');
 				break;
-			case indicatorStates.ERROR :
+			case states.ERROR :
 				console.log('ERROR');
 				break;
 			default:
