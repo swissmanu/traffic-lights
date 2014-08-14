@@ -1,15 +1,22 @@
+var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
+	, q = require('q')
+	, exec = require('child_process').exec
+	, states = require('./state')
+	, Indicator = require('./indicator')
+	, util = require('util');
+
 /** Module: ClewareTrafficLights
  *
  * See also:
  *     * http://www.cleware.net/neu/produkte/usbtischampel.html
  *     * https://blog.codecentric.de/en/2013/07/using-a-raspberry-pi-to-control-an-extreme-feedback-devices/
  */
+function ClewareTrafficLights(config) {
+	Indicator.call(this, config);
+}
+util.inherits(ClewareTrafficLights, Indicator);
+module.exports = ClewareTrafficLights;
 
-
-var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
-	, q = require('q')
-	, exec = require('child_process').exec
-	, indicatorStates = require('./indicatorState');
 
 /** Function: buildParameterString
  *
@@ -82,26 +89,22 @@ function playRoundAbout(config) {
 	.then(executeClewarecontrol.bind(this, config, buildParameterString(true, true, true)));
 }
 
-/** Function: init
- *
- */
-function init(config) {
-	debug('Init cleware traffic lights');
-	return playRoundAbout(config);
-}
 
-/** Function: stop
- *
- */
-function stop(config) {
+
+
+
+
+ClewareTrafficLights.prototype.start = function start(config) {
+	debug('Start cleware traffic lights');
+	return playRoundAbout(config);
+};
+
+ClewareTrafficLights.prototype.stop = function stop(config) {
 	debug('Stopping cleware traffic lights');
 	return executeClewarecontrol(config, buildParameterString(false, false, false));
-}
+};
 
-/** Function: update
- *
- */
-function update(config, indicatorState, lastIndicatorState) {
+ClewareTrafficLights.prototype.update = function update(config, indicatorState, lastIndicatorState) {
 	debug('Show state ' + indicatorState);
 
 	var deferred = q.defer()
@@ -111,13 +114,16 @@ function update(config, indicatorState, lastIndicatorState) {
 		debug('Update traffic lights');
 
 		switch(indicatorState) {
-			case indicatorStates.WARNING :
+			case states.WARNING :
+			case states.WARNING_IMPORTANT :
 				parameters = buildParameterString(false, true, false);
 				break;
-			case indicatorStates.OK :
+			case states.OK :
+			case states.OK_IMPORTANT :
 				parameters = buildParameterString(false, false, true);
 				break;
-			case indicatorStates.ERROR :
+			case states.ERROR :
+			case states.ERROR_IMPORTANT :
 				parameters = buildParameterString(true, false, false);
 				break;
 			default:
@@ -125,8 +131,7 @@ function update(config, indicatorState, lastIndicatorState) {
 				break;
 		}
 
-		playRoundAbout(config)
-		.then(executeClewarecontrol.bind(this, config, parameters))
+		executeClewarecontrol.bind(this, config, parameters)
 		.then(function() {
 			deferred.resolve();
 		})
@@ -140,10 +145,4 @@ function update(config, indicatorState, lastIndicatorState) {
 	}
 
 	return deferred.promise;
-}
-
-module.exports = {
-	init: init
-	, update: update
-	, stop: stop
 };

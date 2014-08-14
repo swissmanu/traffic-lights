@@ -2,6 +2,9 @@
 module.exports = {
 	NONE: 0
 	, OK: 1
-	, WARNING: 2
-	, ERROR: 3
+	, OK_IMPORTANT: 2
+	, WARNING: 4
+	, WARNING_IMPORTANT: 5
+	, ERROR: 6
+	, ERROR_IMPORTANT: 7
 };

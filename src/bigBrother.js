@@ -22,7 +22,7 @@ function poll(sources,  config, indicator) {
 			maxState = Math.max(state, maxState);
 		});
 
-		var promise = indicator.update(config.indicator, maxState, lastState);
+		var promise = indicator.update(maxState, lastState);
 		lastState = maxState;
 		return promise;
 	})
@@ -45,19 +45,19 @@ function poll(sources,  config, indicator) {
  * Parameters:
  *     (Object) config - Configuration values to setup <BigBrother>.
  */
-var BigBrother = function(config) {
+function BigBrother(config) {
 	debug('Setting up Big Brother');
 
 	if(!config) {
 		throw new Error('Big Brother cannot watch you without proper config!');
 	}
 
-	var self = this;
+	var self = this
+		, Indicator = require('./indicator/' + config.indicator.type);
 
 	self.config = config;
 	self.sources = [];
-	self.indicator = require('./indicator/' + config.indicator.type);
-
+	self.indicator = new Indicator(config.indicator);
 
 	config.sources.forEach(function(source) {
 		var Source = require('./source/' + source.type);
@@ -74,7 +74,7 @@ BigBrother.prototype.watch = function watch() {
 	if(!this.isWatching()) {
 		debug('Start watching you');
 
-		this.indicator.init(this.config.indicator)
+		this.indicator.start()
 		.then(poll.bind(this, this.sources, this.config, this.indicator));
 	} else {
 		debug('I\'m already watching you :-|');
@@ -90,7 +90,7 @@ BigBrother.prototype.stop = function stop() {
 		clearTimeout(this.timeoutId);
 		delete this.timeoutId;
 
-		this.indicator.stop(this.config.indicator);
+		this.indicator.stop();
 	} else {
 		debug('I\'m not watching you');
 		result = false;

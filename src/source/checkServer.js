@@ -1,6 +1,6 @@
 var debug = require('debug')('traffic-lights:source:checkserver')
 	, q = require('q')
-	, state = require('../indicator/state')
+	, states = require('../indicator/state')
 	, Source = require('./source')
 	, util = require('util');
 
@@ -25,18 +25,26 @@ CheckServer.prototype.getState = function getState() {
 
 	this.request.get(url
 		, function(error, response) {
+			var state = states.NONE;
+
 			if(!error) {
 				if(response.statusCode === (self.config.expectedHttpStatus || 200)) {
 					debug('got expected http status code');
-					defered.resolve(state.OK);
+					state = states.OK;
 				} else {
 					debug('got unexpected http status code ' + response.statusCode);
-					defered.resolve(state.ERROR);
+					state = states.ERROR;
 				}
 			} else {
 				debug('connection error');
-				defered.resolve(state.ERROR);
+				state = states.ERROR;
 			}
+
+			if(this.config !== undefined && this.config.important === true) {
+				state++;
+			}
+
+			defered.resolve(state);
 		}
 	);
 
