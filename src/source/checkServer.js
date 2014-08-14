@@ -19,7 +19,7 @@ CheckServer.prototype.getState = function getState() {
 
 	var self = this
 		, defered = q.defer()
-		, url = this.getConfigValue('url');
+		, url = this.config.url;
 
 	debug('try to connect to ' + url);
 

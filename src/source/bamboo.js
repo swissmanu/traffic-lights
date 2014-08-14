@@ -18,20 +18,20 @@ Bamboo.prototype.getState = function getState() {
 
 	var self = this
 		, defered = q.defer()
-		, url = self.getConfigValue('url');
+		, url = self.config.url;
 
 	if(url.substr(-1) !== '/') {
 		url += '/';
 	}
-	url += 'rest/api/latest/result/' + self.getConfigValue('planId') + '.json?max-result=1&os_authType=basic';
+	url += 'rest/api/latest/result/' + self.config.planId + '.json?max-result=1&os_authType=basic';
 
 	debug('fetching latest build from ' + url);
 
 	self.request.get(url
 		, {
 			auth: {
-				user: self.getConfigValue('username')
-				, password: self.getConfigValue('password')
+				user: self.config.username
+				, password: self.config.password
 				, sendImmediately: false
 			}
 		}
