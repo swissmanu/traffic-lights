@@ -7,19 +7,15 @@ var debug = require('debug')('traffic-lights:bigbrother')
 /** Function: poll
  *
  */
-function poll(source,  config, indicator) {
+function poll(sources,  config, indicator) {
 	debug('polling...');
 
-	var self = this
-		, sourcePromises = [];
+	var self = this;
 
-	self.sources.forEach(function(source, index) {
-		sourcePromises.push(source(config.sources[index], request));
-	});
-
-	q.all(sourcePromises)
+	q.all(sources.map(function(source, index) {
+		return source(config.sources[index], request);
+	}))
 	.then(function(sourceStates) {
-
 		var maxState = states.NONE;
 
 		sourceStates.forEach(function(state) {
@@ -32,7 +28,7 @@ function poll(source,  config, indicator) {
 	})
 	.then(function() {
 		debug('schedule next poll in ' + (config.pollInterval / 1000) + ' seconds');
-		self.timeoutId = setTimeout(poll.bind(self, source, config, indicator), config.pollInterval);
+		self.timeoutId = setTimeout(poll.bind(self, sources, config, indicator), config.pollInterval);
 	})
 	.catch(function(error) {
 		debug('error :(');
@@ -76,12 +72,9 @@ var BigBrother = function(config) {
 BigBrother.prototype.watch = function watch() {
 	if(!this.isWatching()) {
 		debug('Start watching you');
-		var self = this;
 
 		this.indicator.init(this.config.indicator)
-		.then(function() {
-			poll.call(self, self.source, self.config, self.indicator);
-		});
+		.then(poll.bind(this, this.sources, this.config, this.indicator));
 	} else {
 		debug('I\'m already watching you :-|');
 	}
@@ -108,6 +101,6 @@ BigBrother.prototype.stop = function stop() {
  */
 BigBrother.prototype.isWatching = function isWatching() {
 	return this.timeoutId !== undefined;
-}
+};
 
 module.exports = BigBrother;
