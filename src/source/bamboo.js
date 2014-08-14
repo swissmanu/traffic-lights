@@ -1,25 +1,37 @@
 var debug = require('debug')('traffic-lights:source:bamboo')
 	, q = require('q')
-	, states = require('../indicator/state');
+	, states = require('../indicator/state')
+	, Source = require('./source')
+	, util = require('util');
 
-function latestBuildOnBamboo(config, request) {
+function Bamboo(config, request) {
+	debug('created');
+	Source.call(this, config);
+	this.request = request;
+}
+util.inherits(Bamboo, Source);
+module.exports = Bamboo;
+
+
+Bamboo.prototype.getState = function getState() {
 	debug('fetch build from bamboo');
 
-	var defered = q.defer()
-		, url = config.url;
+	var self = this
+		, defered = q.defer()
+		, url = self.getConfigValue('url');
 
 	if(url.substr(-1) !== '/') {
 		url += '/';
 	}
-	url += 'rest/api/latest/result/' + config.planId + '.json?max-result=1&os_authType=basic';
+	url += 'rest/api/latest/result/' + self.getConfigValue('planId') + '.json?max-result=1&os_authType=basic';
 
-	debug('fetching latest build from url');
+	debug('fetching latest build from ' + url);
 
-	request.get(url
+	self.request.get(url
 		, {
 			auth: {
-				user: config.username
-				, password: config.password
+				user: self.getConfigValue('username')
+				, password: self.getConfigValue('password')
 				, sendImmediately: false
 			}
 		}
@@ -47,6 +59,4 @@ function latestBuildOnBamboo(config, request) {
 	);
 
 	return defered.promise;
-}
-
-module.exports = latestBuildOnBamboo;
+};

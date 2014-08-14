@@ -12,8 +12,8 @@ function poll(sources,  config, indicator) {
 
 	var self = this;
 
-	q.all(sources.map(function(source, index) {
-		return source(config.sources[index], request);
+	q.all(sources.map(function(source) {
+		return source.getState();
 	}))
 	.then(function(sourceStates) {
 		var maxState = states.NONE;
@@ -60,7 +60,8 @@ var BigBrother = function(config) {
 
 
 	config.sources.forEach(function(source) {
-		self.sources.push(require('./source/' + source.type));
+		var Source = require('./source/' + source.type);
+		self.sources.push(new Source(source, request));
 	});
 
 	return self;
