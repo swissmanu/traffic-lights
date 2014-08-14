@@ -1,12 +1,16 @@
 {
 	"pollInterval": 3600,
-	"source": {
+	"sources": [{
 		"type": "bamboo",
 		"url": "https://mybambooinstallation.com",
 		"planId": "XY-ABC",
 		"username": "username",
 		"password": "password"
-	},
+	}, {
+		"type": "checkServer",
+		"url": "http://foo.bar/",
+		"expectedHttpStatus": 200
+	}],
 	"indicator": {
 		"type": "clewareTrafficLights",
 		"clewarecontrolBinary": "/home/pi/clewarecontrol-2.5/clewarecontrol"
