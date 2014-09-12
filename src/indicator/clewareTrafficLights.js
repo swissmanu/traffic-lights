@@ -107,15 +107,15 @@ ClewareTrafficLights.prototype.stop = function stop() {
 };
 
 ClewareTrafficLights.prototype.update = function update(state, lastState) {
-	debug('Show state ' + indicatorState);
+	debug('Show state ' + state);
 
 	var deferred = q.defer()
 		, parameters;
 
-	if(indicatorState !== lastIndicatorState) {
+	if(state !== lastState) {
 		debug('Update traffic lights');
 
-		switch(indicatorState) {
+		switch(state) {
 			case states.WARNING :
 			case states.WARNING_IMPORTANT :
 				parameters = buildParameterString(false, true, false);
