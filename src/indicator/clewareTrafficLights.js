@@ -96,17 +96,17 @@ function playRoundAbout(config) {
 
 
 
-ClewareTrafficLights.prototype.start = function start(config) {
+ClewareTrafficLights.prototype.start = function start() {
 	debug('Start cleware traffic lights');
-	return playRoundAbout(config);
+	return playRoundAbout(this.config);
 };
 
-ClewareTrafficLights.prototype.stop = function stop(config) {
+ClewareTrafficLights.prototype.stop = function stop() {
 	debug('Stopping cleware traffic lights');
-	return executeClewarecontrol(config, buildParameterString(false, false, false));
+	return executeClewarecontrol(this.config, buildParameterString(false, false, false));
 };
 
-ClewareTrafficLights.prototype.update = function update(config, indicatorState, lastIndicatorState) {
+ClewareTrafficLights.prototype.update = function update(state, lastState) {
 	debug('Show state ' + indicatorState);
 
 	var deferred = q.defer()
@@ -133,7 +133,7 @@ ClewareTrafficLights.prototype.update = function update(config, indicatorState, 
 				break;
 		}
 
-		executeClewarecontrol.bind(this, config, parameters)
+		executeClewarecontrol.bind(this, this.config, parameters)
 		.then(function() {
 			deferred.resolve();
 		})
