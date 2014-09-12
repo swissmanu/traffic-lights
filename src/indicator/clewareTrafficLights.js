@@ -133,7 +133,7 @@ ClewareTrafficLights.prototype.update = function update(state, lastState) {
 				break;
 		}
 
-		executeClewarecontrol.bind(this, this.config, parameters)
+		executeClewarecontrol.call(this, this.config, parameters)
 		.then(function() {
 			deferred.resolve();
 		})
