@@ -13,6 +13,8 @@ var debug = require('debug')('traffic-lights:indicator:clewaretrafficlights')
  */
 function ClewareTrafficLights(config) {
 	Indicator.call(this, config);
+
+	this.blinking = false;
 }
 util.inherits(ClewareTrafficLights, Indicator);
 module.exports = ClewareTrafficLights;

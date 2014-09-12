@@ -33,18 +33,26 @@ Console.prototype.update = function update(state, lastState) {
 
 		switch(state) {
 			case states.OK :
-			case states.OK_IMPORTANT :
 				console.log('OK');
 				break;
+			case states.OK_IMPORTANT :
+				console.log('OK_IMPORTANT');
+				break;
+
 			case states.WARNING :
-			case states.WARNING_IMPORTANT :
 				console.log('WARNING');
+				break;
+			case states.WARNING_IMPORTANT :
+				console.log('WARNING_IMPORTANT');
 				break;
 
 			case states.ERROR :
-			case states.ERROR_IMPORTANT :
 				console.log('ERROR');
 				break;
+			case states.ERROR_IMPORTANT :
+				console.log('ERROR_IMPORTANT');
+				break;
+
 			default:
 				console.log('NONE');
 				break;

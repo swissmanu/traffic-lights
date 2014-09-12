@@ -65,7 +65,7 @@ function BigBrother(config) {
 	});
 
 	return self;
-};
+}
 
 /** Function: watch
  *
@@ -93,7 +93,6 @@ BigBrother.prototype.stop = function stop() {
 		this.indicator.stop();
 	} else {
 		debug('I\'m not watching you');
-		result = false;
 	}
 };
 

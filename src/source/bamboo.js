@@ -36,7 +36,7 @@ Bamboo.prototype.getState = function getState() {
 			}
 		}
 		, function(error, response, body) {
-			if(!error) {
+			if(!error && response.statusCode === 200) {
 				debug('got valid response');
 
 				var latestBuild = JSON.parse(body).results.result[0]
@@ -48,6 +48,10 @@ Bamboo.prototype.getState = function getState() {
 				} else if(latestBuild.state === 'Successful') {
 					debug('build says it was successful');
 					state = states.OK;
+				}
+
+				if(self.config !== undefined && self.config.important === true) {
+					state++;
 				}
 
 				defered.resolve(state);
