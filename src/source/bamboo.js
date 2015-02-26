@@ -2,7 +2,9 @@ var debug = require('debug')('traffic-lights:source:bamboo')
 	, q = require('q')
 	, states = require('../indicator/state')
 	, Source = require('./source')
-	, util = require('util');
+	, util = require('util')
+	, isNumber = require('amp-is-number')
+	, isUndefined = require('amp-is-undefined');
 
 function Bamboo(config, request) {
 	debug('created');
@@ -50,8 +52,18 @@ Bamboo.prototype.getState = function getState() {
 					state = states.OK;
 				}
 
-				if(self.config !== undefined && self.config.important === true) {
-					state++;
+				if(!isUndefined(self.config)) {
+					// Limit state value if given in config:
+					if(isNumber(self.config.maxState)) {
+						debug('Limit state to ' + self.config.maxState);
+						state = Math.min(state, self.config.maxState);
+					}
+
+					// If necessary, make this source more important:
+					if(self.config.important === true) {
+						debug('Make source more important');
+						state++;
+					}
 				}
 
 				defered.resolve(state);

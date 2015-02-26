@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/swissmanu/traffic-lights",
   "dependencies": {
-    "request": "~2.33.0",
+    "amp-is-number": "^1.0.1",
+    "amp-is-undefined": "^1.0.1",
+    "debug": "~2.0.0",
     "q": "~1.0.0",
-    "debug": "~2.0.0"
+    "request": "~2.33.0"
   }
 }
